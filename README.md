@@ -1,3 +1,6 @@
+# bottom-up-attention-colab
+The environment configuration for this repo is too complicated, so I write a script for configuration.
+**You can run  online via [*web*](https://colab.research.google.com/github/idejie/bottom-up-attention-colab/blob/master/colab.ipynb)**
 # bottom-up-attention
 
 This code implements a bottom-up attention model, based on multi-gpu training of Faster R-CNN with ResNet-101, using object and attribute annotations from [Visual Genome](http://visualgenome.org/).
