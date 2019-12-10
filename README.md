@@ -1,5 +1,6 @@
 # bottom-up-attention-colab
-The environment configuration for this repo is too complicated, so I write a script for configuration.
+The environment configuration for this repo is too complicated, so I created a script for configuration.
+
 **You can run  online via [*web*](https://colab.research.google.com/github/idejie/bottom-up-attention-colab/blob/master/colab.ipynb)**
 # bottom-up-attention
 
