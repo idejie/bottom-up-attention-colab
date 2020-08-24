@@ -27,6 +27,7 @@ import csv
 from multiprocessing import Process
 import random
 import json
+from google.colab import drive
 
 csv.field_size_limit(sys.maxsize)
 
@@ -179,6 +180,9 @@ def generate_tsv(gpu_id, prototxt, weights, image_ids, outfile):
                         print 'GPU {:d}: {:d}/{:d} {:.3f}s (projected finish: {:.2f} hours)' \
                               .format(gpu_id, count+1, len(missing), _t['misc'].average_time,
                               _t['misc'].average_time*(len(missing)-count)/3600)
+                    if (count%10000)==0:
+                        drive.flush_and_unmount()
+                        drive.mount('/content/drive',force_remount=True)
                     count += 1
 
 
