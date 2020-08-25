@@ -180,7 +180,7 @@ def generate_tsv(gpu_id, prototxt, weights, image_ids, outfile):
                         print 'GPU {:d}: {:d}/{:d} {:.4f}s (projected finish: {:.4f} hours)' \
                               .format(gpu_id, count+1, len(missing), _t['misc'].average_time,
                               _t['misc'].average_time*(len(missing)-count)/3600)
-                        if ((count+1)%15000)==0:
+                        if ((count+1)%5000)==0:
                             drive.flush_and_unmount()
                             drive.mount('/content/drive',force_remount=True)
                             import time
