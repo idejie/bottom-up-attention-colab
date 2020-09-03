@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 
-"""Generate bottom-up attention features as a tsv file. Can use multiple gpus, each produces a 
-   separate tsv file that can be merged later (e.g. by using merge_tsv function). 
+"""Generate bottom-up attention features as a tsv file. Can use multiple gpus, each produces a
+   separate tsv file that can be merged later (e.g. by using merge_tsv function).
    Modify the load_image_ids script as necessary for your data location. """
 
 
@@ -15,7 +15,7 @@ from fast_rcnn.config import cfg, cfg_from_file
 from fast_rcnn.test import im_detect,_get_blobs
 from fast_rcnn.nms_wrapper import nms
 from utils.timer import Timer
-
+import h5py
 import caffe
 import argparse
 import pprint
@@ -35,7 +35,7 @@ csv.field_size_limit(sys.maxsize)
 FIELDNAMES = ['image_id', 'image_w','image_h','max_confs', 'cls_probs', 'num_boxes','boxes', 'features']
 
 # Settings for the number of features per image. To re-create pretrained features with 36 features
-# per image, set both values to 36. 
+# per image, set both values to 36.
 MIN_BOXES = 36
 MAX_BOXES = 36
 
@@ -134,7 +134,7 @@ def parse_args():
                         default='/content/resnet101_faster_rcnn_final_iter_320000.caffemodel', type=str)
     parser.add_argument('--out', dest='outfile',
                         help='output filepath',
-                        default='f30k_resnet101_faster_rcnn_genome.tsv', type=str)
+                        default='f30k_resnet101_faster_rcnn_genome_36.tsv', type=str)
     parser.add_argument('--cfg', dest='cfg_file',
                         help='optional config file', default='/content/experiments/cfgs/faster_rcnn_end2end_resnet.yml', type=str)
     parser.add_argument('--split', dest='data_split',
@@ -157,10 +157,8 @@ def generate_tsv(gpu_id, prototxt, weights, image_ids, outfile):
     wanted_ids = set([int(image_id[1]) for image_id in image_ids])
     found_ids = set()
     if os.path.exists(outfile):
-        with open(outfile) as tsvfile:
-            reader = csv.DictReader(tsvfile, delimiter='\t', fieldnames = FIELDNAMES)
-            for item in reader:
-                found_ids.add(int(item['image_id']))
+        with h5py.File(outfile,'r') as h5_file:
+            found_ids = set([int(image_id) for image_id in h5_file.keys()])
     missing = wanted_ids - found_ids
     if len(missing) == 0:
         print 'GPU {:d}: already completed {:d}'.format(gpu_id, len(image_ids))
@@ -170,40 +168,23 @@ def generate_tsv(gpu_id, prototxt, weights, image_ids, outfile):
         caffe.set_mode_gpu()
         caffe.set_device(gpu_id)
         net = caffe.Net(prototxt, caffe.TEST, weights=weights)
-        with open(outfile, 'ab') as tsvfile:
-            writer = csv.DictWriter(tsvfile, delimiter = '\t', fieldnames = FIELDNAMES)
-            _t = {'misc' : Timer()}
+        with h5py.File(outfile, 'a') as h5_file:
+            _t = {'misc': Timer()}
             count = 0
             for im_file,image_id in image_ids:
                 if int(image_id) in missing:
                     _t['misc'].tic()
-                    writer.writerow(get_detections_from_im(net, im_file, image_id))
+                    result = get_detections_from_im(net, im_file, image_id)
+                    g = h5_file.create_group(str(image_id))
+                    for k,v in result.items():
+                        g.create_dataset(k, data=v)
                     _t['misc'].toc()
                     if ((count+1)% 100) == 0:
                         print 'GPU {:d}: {:d}/{:d} {:.4f}s (projected finish: {:.4f} hours)' \
                               .format(gpu_id, count, len(missing), _t['misc'].average_time,
                               _t['misc'].average_time*(len(missing)-count)/3600)
                     count += 1
-
-
-
-
-def merge_tsvs():
-    test = ['/work/data/tsv/test2015/resnet101_faster_rcnn_final_test.tsv.%d' % i for i in range(8)]
-
-    outfile = '/work/data/tsv/merged.tsv'
-    with open(outfile, 'ab') as tsvfile:
-        writer = csv.DictWriter(tsvfile, delimiter = '\t', fieldnames = FIELDNAMES)
-
-        for infile in test:
-            with open(infile) as tsv_in_file:
-                reader = csv.DictReader(tsv_in_file, delimiter='\t', fieldnames = FIELDNAMES)
-                for item in reader:
-                    try:
-                      writer.writerow(item)
-                    except Exception as e:
-                      print e
-
+                    h5_file.flush()
 
 
 if __name__ == '__main__':
