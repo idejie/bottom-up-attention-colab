@@ -98,6 +98,7 @@ def get_detections_from_im(net, im_file, image_id, conf_thresh=0.2):
         cls_scores = scores[:, cls_ind]
         dets = np.hstack((cls_boxes, cls_scores[:, np.newaxis])).astype(np.float32)
         keep = np.array(nms(dets, cfg.TEST.NMS))
+        print(cls_scores)
         max_conf[keep] = np.where(cls_scores[keep] > max_conf[keep], cls_scores[keep], max_conf[keep])
 
     keep_boxes = np.where(max_conf >= conf_thresh)[0]
@@ -105,7 +106,7 @@ def get_detections_from_im(net, im_file, image_id, conf_thresh=0.2):
         keep_boxes = np.argsort(max_conf)[::-1][:MIN_BOXES]
     elif len(keep_boxes) > MAX_BOXES:
         keep_boxes = np.argsort(max_conf)[::-1][:MAX_BOXES]
-    print(pool5[keep_boxes].shape,len(keep_boxes))
+    print(max_conf[keep_boxes])
     return {
         'image_id': image_id,
         'image_h': np.size(im, 0),
