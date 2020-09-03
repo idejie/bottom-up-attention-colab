@@ -95,7 +95,7 @@ def get_detections_from_im(net, im_file, image_id, conf_thresh=0.2):
     # Keep only the best detections
     max_conf = np.zeros((rois.shape[0]))
     for cls_ind in range(1,cls_prob.shape[1]):
-        cls_scores = scores[:, cls_ind]
+#         cls_scores = scores[:, cls_ind]
         dets = np.hstack((cls_boxes, cls_scores[:, np.newaxis])).astype(np.float32)
         keep = np.array(nms(dets, cfg.TEST.NMS))
         print(cls_scores)
