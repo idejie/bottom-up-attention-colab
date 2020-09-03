@@ -32,7 +32,7 @@ from google.colab import drive
 csv.field_size_limit(sys.maxsize)
 
 
-FIELDNAMES = ['image_id', 'image_w','image_h','num_boxes','max_confs', 'cls_probs' ,'boxes', 'features']
+FIELDNAMES = ['image_id', 'image_w','image_h','max_confs', 'cls_probs', 'num_boxes','boxes', 'features']
 
 # Settings for the number of features per image. To re-create pretrained features with 36 features
 # per image, set both values to 36. 
