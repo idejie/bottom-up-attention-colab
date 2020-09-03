@@ -106,19 +106,16 @@ def get_detections_from_im(net, im_file, image_id, conf_thresh=0.2):
         keep_boxes = np.argsort(max_conf)[::-1][:MIN_BOXES]
     elif len(keep_boxes) > MAX_BOXES:
         keep_boxes = np.argsort(max_conf)[::-1][:MAX_BOXES]
-    print(max_conf.shape)
-    print(max_conf[0])
-    print(cls_prob.shape)
-    print(cls_boxes.shape)
-    print(pool5.shape)
-    print('=============')
+
     return {
         'image_id': image_id,
         'image_h': np.size(im, 0),
         'image_w': np.size(im, 1),
+        'max_confs': max_conf[keep_boxes],
+        'cls_probs': cls_prob[keep_boxes],
         'num_boxes' : len(keep_boxes),
-        'boxes': base64.b64encode(cls_boxes[keep_boxes]),
-        'features': base64.b64encode(pool5[keep_boxes])
+        'boxes': cls_boxes[keep_boxes],
+        'features': pool5[keep_boxes]
     }
 
 
