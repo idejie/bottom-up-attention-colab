@@ -172,7 +172,8 @@ def generate_tsv(gpu_id, prototxt, weights, image_ids, outfile):
             _t = {'misc' : Timer()}
             count = 0
             for im_file,image_id in image_ids:
-                if int(image_id) in missing:
+                if int(image_id) == 20450:
+#                 if int(image_id) in missing:
                     _t['misc'].tic()
                     writer.writerow(get_detections_from_im(net, im_file, image_id))
                     _t['misc'].toc()
