@@ -16,6 +16,8 @@ from fast_rcnn.test import im_detect,_get_blobs
 from fast_rcnn.nms_wrapper import nms
 from utils.timer import Timer
 import h5py
+import os
+os.environ['GLOG_minloglevel'] = '2'
 import caffe
 import argparse
 import pprint
