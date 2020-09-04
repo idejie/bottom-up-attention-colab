@@ -220,8 +220,6 @@ if __name__ == '__main__':
     assert cfg.TEST.HAS_RPN
 
     image_ids = load_image_ids(args.data_split)
-    random.seed(10)
-    random.shuffle(image_ids)
     # Split image ids between gpus
     image_ids = [image_ids[i::len(gpus)] for i in range(len(gpus))]
 
