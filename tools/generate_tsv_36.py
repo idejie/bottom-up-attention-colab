@@ -190,11 +190,10 @@ def generate_tsv(gpu_id, prototxt, weights, image_ids, outfile):
                         print 'GPU {:d}: {:d}/{:d} {:.4f}s (projected finish: {:.4f} hours)' \
                               .format(gpu_id, count, len(missing), _t['misc'].average_time,
                               _t['misc'].average_time*(len(missing)-count)/3600)
-                    if (count+1)>len(wanted_ids)*0.5 and ((count+1))%10000==0:
-                        print('a half finished ')
-                        command = 'gsutil cp /content/coco_resnet101_faster_rcnn_genome_36.h5.0 gs://flickr30k'
-                        os.system(command)
-                        print('flushed to gcloud')
+                        if (count+1)>len(wanted_ids)*0.4 and ((count+1))%1000==0:
+                            command = 'gsutil cp /content/coco_resnet101_faster_rcnn_genome_36.h5.0 gs://flickr30k'
+                            os.system(command)
+                            print('flushed to gcloud')
                     count += 1
                     
 
