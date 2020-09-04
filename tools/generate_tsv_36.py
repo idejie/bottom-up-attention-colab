@@ -184,13 +184,19 @@ def generate_tsv(gpu_id, prototxt, weights, image_ids, outfile):
                     g = h5_file.create_group(str(image_id))
                     for k,v in result.items():
                         g.create_dataset(k, data=v)
+                    h5_file.flush()
                     _t['misc'].toc()
                     if ((count+1)% 100) == 0:
                         print 'GPU {:d}: {:d}/{:d} {:.4f}s (projected finish: {:.4f} hours)' \
                               .format(gpu_id, count, len(missing), _t['misc'].average_time,
                               _t['misc'].average_time*(len(missing)-count)/3600)
+                    if (count+1)>len(wanted_ids)*0.5 and ((count+1))%10000==0:
+                        print('a half finished ')
+                        command = 'gsutil cp /content/coco_resnet101_faster_rcnn_genome_36.h5.0 gs://flickr30k'
+                        os.system(command)
+                        print('flushed to gcloud')
                     count += 1
-                    h5_file.flush()
+                    
 
 
 if __name__ == '__main__':
