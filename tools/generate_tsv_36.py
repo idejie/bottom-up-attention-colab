@@ -63,7 +63,11 @@ def load_image_ids(split_name):
           filepath = os.path.join('/data/visualgenome/', item['url'].split('rak248/')[-1])
           split.append((filepath,image_id))
     elif split_name == 'coco':
-        pass
+        with open('/content/coco_dataset.json') as f:
+            for item in json.load(f)['images']:
+                image_id = int(item['cocoid'])
+                filepath = os.path.join('/content/'+item['filepath'], item['filename'])
+                split.append((filepath,image_id))
     elif split_name == 'flickr30k':
         """
         ./tools/generate_tsv.py --gpu 0,1 --cfg experiments/cfgs/faster_rcnn_end2end_resnet.yml --def models/vg/ResNet-101/faster_rcnn_end2end/test.prototxt --out f30k_resnet101_faster_rcnn_genome.tsv --net data/faster_rcnn_models/resnet101_faster_rcnn_final.caffemodel --split flickr30k
