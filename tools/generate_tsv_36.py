@@ -63,7 +63,7 @@ def load_image_ids(split_name):
           filepath = os.path.join('/data/visualgenome/', item['url'].split('rak248/')[-1])
           split.append((filepath,image_id))
     elif split_name == 'coco':
-        with open('/content/coco_dataset.json') as f:
+        with open('/content/dataset.json') as f:
             for item in json.load(f)['images']:
                 image_id = int(item['cocoid'])
                 filepath = os.path.join('/content/'+item['filepath'], item['filename'])
