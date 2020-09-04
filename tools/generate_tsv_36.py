@@ -195,8 +195,8 @@ if __name__ == '__main__':
 
     args = parse_args()
 
-    print('Called with args:')
-    print(args)
+#     print('Called with args:')
+#     print(args)
 
     if args.cfg_file is not None:
         cfg_from_file(args.cfg_file)
@@ -207,8 +207,8 @@ if __name__ == '__main__':
     gpu_list = gpu_id.split(',')
     gpus = [int(i) for i in gpu_list]
 
-    print('Using config:')
-    pprint.pprint(cfg)
+#     print('Using config:')
+#     pprint.pprint(cfg)
     assert cfg.TEST.HAS_RPN
 
     image_ids = load_image_ids(args.data_split)
