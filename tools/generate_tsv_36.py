@@ -223,7 +223,7 @@ if __name__ == '__main__':
     image_ids = load_image_ids(args.data_split)
     if args.is_reverse:
         image_ids.reverse()
-        print('reversed)
+        print('reversed')
     # Split image ids between gpus
     image_ids = [image_ids[i::len(gpus)] for i in range(len(gpus))]
 
