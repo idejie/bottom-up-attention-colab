@@ -233,8 +233,10 @@ if __name__ == '__main__':
 
     for i,gpu_id in enumerate(gpus):
         if args.is_reverse:
-            i=1
-        outfile = '%s.%d' % (args.outfile, i)
+            t=1
+        else:
+            t=0
+        outfile = '%s.%d' % (args.outfile, t)
         p = Process(target=generate_tsv,
                     args=(gpu_id, args.prototxt, args.caffemodel, image_ids[i], outfile))
         p.daemon = True
