@@ -149,6 +149,8 @@ def parse_args():
     parser.add_argument('--set', dest='set_cfgs',
                         help='set config keys', default=None,
                         nargs=argparse.REMAINDER)
+    parser.add_argument('--r',dest='is_reverse',
+                       default=False,type=bool)
 
     if len(sys.argv) == 1:
         parser.print_help()
@@ -191,7 +193,7 @@ def generate_tsv(gpu_id, prototxt, weights, image_ids, outfile):
                               .format(gpu_id, count, len(missing), _t['misc'].average_time,
                               _t['misc'].average_time*(len(missing)-count)/3600)
                         if (count+1)>len(wanted_ids)*0.4 and ((count+1))%1000==0:
-                            command = 'gsutil cp /content/coco_resnet101_faster_rcnn_genome_36.h5.0 gs://flickr30k'
+                            command = 'gsutil cp /content/'+outfile+ ' gs://flickr30k'
                             os.system(command)
                             print('flushed to gcloud')
                     count += 1
@@ -219,6 +221,9 @@ if __name__ == '__main__':
     assert cfg.TEST.HAS_RPN
 
     image_ids = load_image_ids(args.data_split)
+    if args.is_reverse:
+        image_ids.reverse()
+        print('reversed)
     # Split image ids between gpus
     image_ids = [image_ids[i::len(gpus)] for i in range(len(gpus))]
 
@@ -227,6 +232,8 @@ if __name__ == '__main__':
     procs = []
 
     for i,gpu_id in enumerate(gpus):
+        if args.is_reverse:
+            i=1
         outfile = '%s.%d' % (args.outfile, i)
         p = Process(target=generate_tsv,
                     args=(gpu_id, args.prototxt, args.caffemodel, image_ids[i], outfile))
